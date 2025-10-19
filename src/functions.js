@@ -33,3 +33,21 @@ export function zemak(index) {
     [uzdevumi[index + 1], uzdevumi[index]] = [uzdevumi[index], uzdevumi[index + 1]]
   }
 }
+
+// Funkcija, kas atļauj rediģēt uzdevumu
+export function redigetUzdevumu(index, jaunsTeksts) {
+  //Pārbauda, vai jaunais teksts nav atstāts tukšs un indekss ir derīgs
+  if (jaunsTeksts.trim() && index >= 0 && index < uzdevumi.length) {
+    // Atjauno uzdevuma tekstu
+    uzdevumi[index] = jaunsTeksts.trim();
+  }
+}
+
+
+export function dzestUzdevumu(index) {
+  // Pārbauda, vai indekss ir derīgs
+  if (index >= 0 && index < uzdevumi.length) {
+    // Izņem uzdevumu no masīva, izmantojot splice metodi
+    uzdevumi.splice(index, 1);
+  }
+}
