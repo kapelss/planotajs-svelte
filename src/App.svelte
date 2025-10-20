@@ -74,7 +74,7 @@ function dzest(i) {
  <div>
   <!-- Teksta ievades lauks -->
   <!-- Enter taustiņa nospiešana arī ļauj pievienot uzdevumu -->
-  <input type="text" placeholder="Ieavadi uzdevumu..." bind:value={ievade} on:keydown={(e) => { if (e.key === "Enter") addTask(); }}/>
+  <input type="text" placeholder="Ievadi uzdevumu..." bind:value={ievade} on:keydown={(e) => { if (e.key === "Enter") addTask(); }}/>
 
   <!-- Poga uzdevuma pievienošanai -->
   <button on:click={addTask} class="pievienot-btn">Pievienot</button>
