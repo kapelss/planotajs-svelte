@@ -1,69 +1,91 @@
-<!-- Pilnās funkcijas atrodas functions.js failā! -->
 <script>
-// importē funkcijas no ārējā faila
-import { panemUzdevumu, pievienotUzdevumu, augstak, zemak, redigetUzdevumu, dzestUzdevumu } from "./functions";
+  // Mainīgais, kas saglabā ievades lauka vērtību
+  let ievade = "";
 
-// Mainīgais, kas saglabā ievades lauka vērtību
-let ievade = "";
+  // Masīvs, kurā glabājas visi uzdevumi
+  let uzdevumi = [];
 
-// Iegūst sākotnējo uzdevumu sarakstu
-let uzdevumi = panemUzdevumu();
+  // Indekss tam uzdevumam, kuru pašlaik rediģē (ja nerediģē nevienu, tad null)
+  let redigejamaisIndekss = null;
 
-// Mainīgie uzdevuma rediģēšanai
-let redigejamaisIndekss = null;
-let redigejamaisTeksts = "";
+  // Teksts, kas tiek rediģēts ievades laukā rediģēšanas režīmā
+  let redigejamaisTeksts = "";
 
-// Funkcija, kas pievieno jaunu uzdevumu
-function addTask() {
-  // Pievieno uzdevumu caur importēto funckiju
-  pievienotUzdevumu(ievade);
-  // Atjauno uzdevuma sarakstu, izmantojot spread operātoru
-  uzdevumi = [...panemUzdevumu()];
-  // Notīra ievades lauku 
-  ievade = "";
-}
+  // Funkcija, kas pievieno jaunu uzdevumu
+  function addTask() {
+    const apgriezts = ievade.trim();        // Noņem liekās atstarpes no ievades teksta
 
-// Funkcija, kas pārvieto uzdevumus augstāk
-function moveUp(i) {
-  // Izsauc funkciju, kas maina uzdevuma pozīciju
-  augstak(i);
-  // Atjauno uzdevuma sarakstu
-  uzdevumi = [...panemUzdevumu()];
-}
+    if (!apgriezts) {                       // Pārbauda, vai rezultāts nav tukša virkne
+      return;                               // Ja tukšs, tad nepievieno un iziet no funkcijas
+    }
 
-// Funkcija, kas pārvieto uzdevumus zemāk
-function moveDown(i) {
-  // Izsauc funkciju, kas maina uzdevuma pozīciju
-  zemak(i);
-  // Atjauno uzdevuma sarakstu
-  uzdevumi = [...panemUzdevumu()];
-}
+    uzdevumi = [...uzdevumi, apgriezts];    // Izveido jaunu masīvu ar jau esošajiem uzdevumiem un pievieno jauno uzdevumu beigās
+    ievade = "";                            // Notīra ievades lauku, lai būtu tukšs nākamajam ierakstam
+  }
 
-// Funkcija, kas sāk uzdevuma rediģēšanu
-function saktRedigesanu(i) {
-  redigejamaisIndekss = i;
-  redigejamaisTeksts = uzdevumi[i];
-}
+  // Funkcija, kas pārvieto uzdevumu augstāk
+  function moveUp(i) {
+    if (i <= 0) {                           // Pārbauda, vai uzdevums jau nav pirmajā pozīcijā
+      return;                               // Ja ir pirmais, tad neko nemaina un iziet no funkcijas
+    }
 
-// Funkcija, kas saglabā rediģēto uzdevumu
-function saglabatRedigesanu(i) {
-  redigetUzdevumu(i, redigejamaisTeksts);
-  uzdevumi = [...panemUzdevumu()];
-  redigejamaisIndekss = null;
-  redigejamaisTeksts = "";
-}
+    const jaunsMasivs = [...uzdevumi];      // Izveido jaunu masīvu, nokopējot visus uzdevumus
+    const pagaidu = jaunsMasivs[i - 1];     // Saglabā iepriekšējā uzdevuma vērtību pagaidu mainīgajā
+    jaunsMasivs[i - 1] = jaunsMasivs[i];    // Iepriekšējo pozīciju aizstāj ar pašreizējo uzdevumu
+    jaunsMasivs[i] = pagaidu;               // Pašreizējā pozīcijā ieliek iepriekš saglabāto uzdevumu
 
-// Funkcija, kas atceļ rediģēšanu
-function atceltRedigesanu() {
-  redigejamaisIndekss = null;
-  redigejamaisTeksts = "";
-}
+    uzdevumi = jaunsMasivs;                 // Atjauno uzdevumu sarakstu ar jauno masīvu
+  }
 
-//funkcija, kas dzēš uzdevumu
-function dzest(i) {
-  dzestUzdevumu(i);
-  uzdevumi = [...panemUzdevumu()];
-}
+  // Funkcija, kas pārvieto uzdevumu zemāk
+  function moveDown(i) {
+    if (i >= uzdevumi.length - 1) {         // Pārbauda, vai uzdevums jau nav pēdējā pozīcijā
+      return;                               // Ja ir pēdējais, tad neko nemaina un iziet no funkcijas
+    }
+
+    const jaunsMasivs = [...uzdevumi];      // Izveido jaunu masīvu, nokopējot visus uzdevumus
+    const pagaidu = jaunsMasivs[i + 1];     // Saglabā nākamā uzdevuma vērtību pagaidu mainīgajā
+    jaunsMasivs[i + 1] = jaunsMasivs[i];    // Nākamo pozīciju aizstāj ar pašreizējo uzdevumu
+    jaunsMasivs[i] = pagaidu;               // Pašreizējā pozīcijā ieliek iepriekš saglabāto nākamo uzdevumu
+
+    uzdevumi = jaunsMasivs;                 // Atjauno uzdevumu sarakstu ar jauno masīvu
+  }
+
+  // Funkcija, kas sāk uzdevuma rediģēšanu
+  function saktRedigesanu(i) {
+    redigejamaisIndekss = i;                // Saglabā, kura indeksa uzdevums pašlaik tiek rediģēts
+    redigejamaisTeksts = uzdevumi[i];       // Ieliek rediģēšanas ievades laukā esošo uzdevuma tekstu
+  }
+
+  // Funkcija, kas saglabā rediģēto uzdevumu
+  function saglabatRedigesanu(i) {
+    const apgriezts = redigejamaisTeksts.trim(); // Noņem liekās atstarpes no rediģētā teksta
+
+    if (!apgriezts) {                       // Pārbauda, vai rediģētais teksts nav tukšs
+      return;                               // Ja tukšs, nesaglabā izmaiņas un iziet no funkcijas
+    }
+
+    const jaunsMasivs = [...uzdevumi];      // Izveido jaunu masīvu, nokopējot visus uzdevumus
+    jaunsMasivs[i] = apgriezts;             // Attiecīgajā pozīcijā iestata jauno, apgriezto tekstu
+
+    uzdevumi = jaunsMasivs;                 // Atjauno uzdevumu sarakstu ar atjaunoto masīvu
+    redigejamaisIndekss = null;             // Izslēdz rediģēšanas režīmu, vairs neviens uzdevums netiek rediģēts
+    redigejamaisTeksts = "";                // Notīra rediģēšanas ievades lauku
+  }
+
+  // Funkcija, kas atceļ rediģēšanu
+  function atceltRedigesanu() {
+    redigejamaisIndekss = null;             // Uzstāda, ka neviens uzdevums netiek rediģēts
+    redigejamaisTeksts = "";                // Notīra rediģēšanas ievades lauku
+  }
+
+  // Funkcija, kas dzēš uzdevumu
+  function dzest(i) {
+    uzdevumi = uzdevumi.filter(function (item, indekss) {
+      // filter izsauc šo funkciju katram masīva elementam un indekss ir tā pozīcija
+      return indekss !== i;                 // Atstāj tikai tos elementus, kuru indekss nav vienāds ar dzēšamā uzdevuma indeksu
+    });
+  }
 </script>
 
 <main>
